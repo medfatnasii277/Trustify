@@ -20,6 +20,11 @@ target/
 *.ipr
 *.sh
 *.MD
+!README.md
+!WORKFLOW.md
+!PROJECT_SUMMARY.md
+!IMPLEMENTATION_SUMMARY.md
+!RUNNING.md
 
 ### NetBeans ###
 /nbproject/private/
