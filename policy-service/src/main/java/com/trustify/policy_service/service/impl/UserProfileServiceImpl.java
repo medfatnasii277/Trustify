@@ -7,6 +7,7 @@ import com.trustify.policy_service.mapper.UserProfileMapper;
 import com.trustify.policy_service.model.UserProfile;
 import com.trustify.policy_service.repository.UserProfileRepository;
 import com.trustify.policy_service.service.UserProfileService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +15,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;

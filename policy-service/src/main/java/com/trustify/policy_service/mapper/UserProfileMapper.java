@@ -12,12 +12,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface UserProfileMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "createdBy", ignore = true)
-    @Mapping(target = "updatedBy", ignore = true)
+    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "createdBy", expression = "java(getCurrentUsername())")
+    @Mapping(target = "updatedBy", expression = "java(getCurrentUsername())")
     @Mapping(target = "keycloakId", ignore = true)
-    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "email", expression = "java(getCurrentUserEmail())")
     @Mapping(target = "age", expression = "java(calculateAge(request.getDateOfBirth()))")
     @Mapping(target = "profileCompleted", constant = "true")
     UserProfile toEntity(UserProfileRequest request);
@@ -39,5 +39,35 @@ public interface UserProfileMapper {
             return null;
         }
         return java.time.Period.between(birthDate, java.time.LocalDate.now()).getYears();
+    }
+    
+    default String getCurrentUsername() {
+        try {
+            org.springframework.security.core.Authentication auth = 
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt) {
+                org.springframework.security.oauth2.jwt.Jwt jwt = 
+                    (org.springframework.security.oauth2.jwt.Jwt) auth.getPrincipal();
+                return jwt.getClaimAsString("preferred_username");
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting username: " + e.getMessage());
+        }
+        return "system";
+    }
+    
+    default String getCurrentUserEmail() {
+        try {
+            org.springframework.security.core.Authentication auth = 
+                org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            if (auth != null && auth.getPrincipal() instanceof org.springframework.security.oauth2.jwt.Jwt) {
+                org.springframework.security.oauth2.jwt.Jwt jwt = 
+                    (org.springframework.security.oauth2.jwt.Jwt) auth.getPrincipal();
+                return jwt.getClaimAsString("email");
+            }
+        } catch (Exception e) {
+            System.err.println("Error getting email: " + e.getMessage());
+        }
+        return null;
     }
 }
