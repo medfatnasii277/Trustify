@@ -33,7 +33,7 @@ import java.util.Map;
 @Slf4j
 @Tag(name = "Admin Claims", description = "Admin claim management endpoints")
 @SecurityRequirement(name = "bearer-jwt")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('admin')")
 public class AdminClaimController {
     
     private final ClaimService claimService;

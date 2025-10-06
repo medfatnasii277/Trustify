@@ -48,11 +48,12 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers("/actuator/gateway/**", "/actuator/routes").permitAll()
                 
-                // Admin-only endpoints - enforce ADMIN role at gateway level
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // Admin-only endpoints - enforce admin role at gateway level
+                .requestMatchers("/api/admin/**").hasRole("admin")
                 
                 // User endpoints - require authentication
                 .requestMatchers("/api/policies/**").authenticated()
+                .requestMatchers("/api/profiles/**").authenticated()
                 .requestMatchers("/api/claims/**").authenticated()
                 
                 // All other requests require authentication
@@ -82,7 +83,7 @@ public class SecurityConfig {
     /**
      * Converter to extract Keycloak realm roles from JWT token
      * Converts roles to Spring Security GrantedAuthority with ROLE_ prefix
-     * Supports both 'user' and 'admin' roles, converting to uppercase
+     * Keeps roles in lowercase to match @PreAuthorize expectations
      */
     static class KeycloakRealmRoleConverter implements Converter<Jwt, Collection<GrantedAuthority>> {
         @Override
@@ -103,10 +104,10 @@ public class SecurityConfig {
                 return Collections.emptyList();
             }
             
-            // Convert roles to GrantedAuthority with ROLE_ prefix and uppercase
-            // Examples: "user" -> "ROLE_USER", "admin" -> "ROLE_ADMIN"
+            // Convert roles to GrantedAuthority with ROLE_ prefix (keep lowercase)
+            // Examples: "user" -> "ROLE_user", "admin" -> "ROLE_admin"
             return roles.stream()
-                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
+                    .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
                     .collect(Collectors.toList());
         }
     }

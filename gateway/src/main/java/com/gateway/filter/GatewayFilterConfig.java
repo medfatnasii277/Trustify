@@ -1,8 +1,10 @@
 package com.gateway.filter;
 
-import org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions;
-import org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions;
-import org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions;
+import java.util.stream.Collectors;
+
+import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
+import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
+import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequestPredicates.path;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.Authentication;
@@ -13,13 +15,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.web.servlet.function.RouterFunction;
 import org.springframework.web.servlet.function.ServerRequest;
 import org.springframework.web.servlet.function.ServerResponse;
-
-import java.util.stream.Collectors;
-
-import static org.springframework.cloud.gateway.server.mvc.filter.BeforeFilterFunctions.addRequestHeader;
-import static org.springframework.cloud.gateway.server.mvc.handler.GatewayRouterFunctions.route;
-import static org.springframework.cloud.gateway.server.mvc.handler.HandlerFunctions.http;
-import static org.springframework.cloud.gateway.server.mvc.predicate.GatewayRequestPredicates.path;
 
 /**
  * Gateway Filter Configuration
@@ -35,6 +30,7 @@ public class GatewayFilterConfig {
     /**
      * Add user information headers to all requests
      * This allows backend services to identify users without parsing JWT again
+     * Also ensures Authorization header is preserved
      */
     private ServerRequest addUserInfoHeaders(ServerRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -68,6 +64,12 @@ public class GatewayFilterConfig {
                 builder.header("X-User-Roles", roles);
             }
             
+            // Ensure Authorization header is forwarded
+            String authHeader = request.headers().firstHeader("Authorization");
+            if (authHeader != null && !authHeader.isEmpty()) {
+                builder.header("Authorization", authHeader);
+            }
+            
             return builder.build();
         }
         
@@ -84,6 +86,10 @@ public class GatewayFilterConfig {
                 .route(path("/api/policies/**"), http("http://localhost:8081"))
                 .before(this::addUserInfoHeaders)
                 .build()
+            .and(route("profiles-service")
+                .route(path("/api/profiles/**"), http("http://localhost:8081"))
+                .before(this::addUserInfoHeaders)
+                .build())
             .and(route("claims-service-user")
                 .route(path("/api/claims/**"), http("http://localhost:8082"))
                 .before(this::addUserInfoHeaders)
