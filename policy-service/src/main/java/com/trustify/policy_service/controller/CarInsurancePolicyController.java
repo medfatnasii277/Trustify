@@ -31,7 +31,7 @@ public class CarInsurancePolicyController {
      * @return the created car insurance policy
      */
     @PostMapping
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<CarInsurancePolicyResponse> createCarInsurancePolicy(
             @Valid @RequestBody CarInsurancePolicyRequest request) {
         CarInsurancePolicyResponse response = carInsurancePolicyService.createCarInsurancePolicy(request);
@@ -46,7 +46,7 @@ public class CarInsurancePolicyController {
      * @return the updated car insurance policy
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<CarInsurancePolicyResponse> updateCarInsurancePolicy(
             @PathVariable Long id,
             @Valid @RequestBody CarInsurancePolicyRequest request) {
@@ -61,7 +61,7 @@ public class CarInsurancePolicyController {
      * @return the car insurance policy
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<CarInsurancePolicyResponse> getCarInsurancePolicy(@PathVariable Long id) {
         CarInsurancePolicyResponse response = carInsurancePolicyService.getCarInsurancePolicy(id);
         return ResponseEntity.ok(response);
@@ -85,7 +85,7 @@ public class CarInsurancePolicyController {
      * @return list of car insurance policies for current user
      */
     @GetMapping("/me")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<List<CarInsurancePolicyResponse>> getCurrentUserCarInsurancePolicies() {
         List<CarInsurancePolicyResponse> responses = carInsurancePolicyService.getCurrentUserCarInsurancePolicies();
         return ResponseEntity.ok(responses);

@@ -31,7 +31,7 @@ public class UserProfileController {
      * @return the created user profile
      */
     @PostMapping
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<UserProfileResponse> createUserProfile(@Valid @RequestBody UserProfileRequest request) {
         UserProfileResponse response = userProfileService.createUserProfile(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -45,7 +45,7 @@ public class UserProfileController {
      * @return the updated user profile
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<UserProfileResponse> updateUserProfile(
             @PathVariable Long id,
             @Valid @RequestBody UserProfileRequest request) {
@@ -60,7 +60,7 @@ public class UserProfileController {
      * @return the user profile
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable Long id) {
         UserProfileResponse response = userProfileService.getUserProfile(id);
         return ResponseEntity.ok(response);
@@ -72,7 +72,7 @@ public class UserProfileController {
      * @return the current user's profile
      */
     @GetMapping("/me")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<UserProfileResponse> getCurrentUserProfile() {
         UserProfileResponse response = userProfileService.getCurrentUserProfile();
         return ResponseEntity.ok(response);

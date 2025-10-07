@@ -31,7 +31,7 @@ public class LifeInsurancePolicyController {
      * @return the created life insurance policy
      */
     @PostMapping
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<LifeInsurancePolicyResponse> createLifeInsurancePolicy(
             @Valid @RequestBody LifeInsurancePolicyRequest request) {
         LifeInsurancePolicyResponse response = lifeInsurancePolicyService.createLifeInsurancePolicy(request);
@@ -46,7 +46,7 @@ public class LifeInsurancePolicyController {
      * @return the updated life insurance policy
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<LifeInsurancePolicyResponse> updateLifeInsurancePolicy(
             @PathVariable Long id,
             @Valid @RequestBody LifeInsurancePolicyRequest request) {
@@ -61,7 +61,7 @@ public class LifeInsurancePolicyController {
      * @return the life insurance policy
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<LifeInsurancePolicyResponse> getLifeInsurancePolicy(@PathVariable Long id) {
         LifeInsurancePolicyResponse response = lifeInsurancePolicyService.getLifeInsurancePolicy(id);
         return ResponseEntity.ok(response);
@@ -85,7 +85,7 @@ public class LifeInsurancePolicyController {
      * @return list of life insurance policies for current user
      */
     @GetMapping("/me")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<List<LifeInsurancePolicyResponse>> getCurrentUserLifeInsurancePolicies() {
         List<LifeInsurancePolicyResponse> responses = lifeInsurancePolicyService.getCurrentUserLifeInsurancePolicies();
         return ResponseEntity.ok(responses);

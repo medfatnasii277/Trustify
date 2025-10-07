@@ -31,7 +31,7 @@ public class HouseInsurancePolicyController {
      * @return the created house insurance policy
      */
     @PostMapping
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<HouseInsurancePolicyResponse> createHouseInsurancePolicy(
             @Valid @RequestBody HouseInsurancePolicyRequest request) {
         HouseInsurancePolicyResponse response = houseInsurancePolicyService.createHouseInsurancePolicy(request);
@@ -46,7 +46,7 @@ public class HouseInsurancePolicyController {
      * @return the updated house insurance policy
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<HouseInsurancePolicyResponse> updateHouseInsurancePolicy(
             @PathVariable Long id,
             @Valid @RequestBody HouseInsurancePolicyRequest request) {
@@ -61,7 +61,7 @@ public class HouseInsurancePolicyController {
      * @return the house insurance policy
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<HouseInsurancePolicyResponse> getHouseInsurancePolicy(@PathVariable Long id) {
         HouseInsurancePolicyResponse response = houseInsurancePolicyService.getHouseInsurancePolicy(id);
         return ResponseEntity.ok(response);
@@ -85,7 +85,7 @@ public class HouseInsurancePolicyController {
      * @return list of house insurance policies for current user
      */
     @GetMapping("/me")
-    @PreAuthorize("hasRole('user')")
+    @PreAuthorize("hasRole('user') or hasRole('admin')")
     public ResponseEntity<List<HouseInsurancePolicyResponse>> getCurrentUserHouseInsurancePolicies() {
         List<HouseInsurancePolicyResponse> responses = houseInsurancePolicyService.getCurrentUserHouseInsurancePolicies();
         return ResponseEntity.ok(responses);
