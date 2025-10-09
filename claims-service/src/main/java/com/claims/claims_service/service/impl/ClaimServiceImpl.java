@@ -4,8 +4,10 @@ import com.claims.claims_service.dto.request.ClaimApprovalRequest;
 import com.claims.claims_service.dto.request.ClaimRejectionRequest;
 import com.claims.claims_service.dto.request.ClaimRequest;
 import com.claims.claims_service.dto.response.ClaimResponse;
+import com.claims.claims_service.event.ClaimStatusChangedEvent;
 import com.claims.claims_service.exception.InvalidClaimOperationException;
 import com.claims.claims_service.exception.ResourceNotFoundException;
+import com.claims.claims_service.kafka.ClaimEventPublisher;
 import com.claims.claims_service.mapper.ClaimMapper;
 import com.claims.claims_service.model.Claim;
 import com.claims.claims_service.repository.ClaimRepository;
@@ -28,6 +30,7 @@ public class ClaimServiceImpl implements ClaimService {
     
     private final ClaimRepository claimRepository;
     private final ClaimMapper claimMapper;
+    private final ClaimEventPublisher claimEventPublisher;
     
     @Override
     public ClaimResponse submitClaim(ClaimRequest request, String keycloakUserId) {
@@ -213,6 +216,9 @@ public class ClaimServiceImpl implements ClaimService {
         Claim savedClaim = claimRepository.save(claim);
         log.info("Claim approved successfully: {}", request.getClaimNumber());
         
+        // Publish Kafka event
+        publishClaimStatusChangeEvent(savedClaim, "UNDER_REVIEW", "APPROVED", adminUserId, null);
+        
         return claimMapper.toResponse(savedClaim);
     }
     
@@ -240,6 +246,9 @@ public class ClaimServiceImpl implements ClaimService {
         
         Claim savedClaim = claimRepository.save(claim);
         log.info("Claim rejected successfully: {}", request.getClaimNumber());
+        
+        // Publish Kafka event
+        publishClaimStatusChangeEvent(savedClaim, "UNDER_REVIEW", "REJECTED", adminUserId, request.getRejectionReason());
         
         return claimMapper.toResponse(savedClaim);
     }
@@ -291,5 +300,23 @@ public class ClaimServiceImpl implements ClaimService {
         String timestamp = String.valueOf(System.currentTimeMillis());
         String randomPart = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
         return prefix + "-" + timestamp.substring(timestamp.length() - 8) + "-" + randomPart;
+    }
+    
+    /**
+     * Helper method to publish claim status change event to Kafka
+     */
+    private void publishClaimStatusChangeEvent(Claim claim, String oldStatus, String newStatus, 
+                                                 String adminUserId, String reason) {
+        ClaimStatusChangedEvent event = new ClaimStatusChangedEvent();
+        event.setClaimNumber(claim.getClaimNumber());
+        event.setOldStatus(oldStatus);
+        event.setNewStatus(newStatus);
+        event.setUserId(claim.getKeycloakUserId());
+        event.setUserEmail(claim.getEmail());  // Assuming email field exists
+        event.setTimestamp(LocalDateTime.now());
+        event.setChangedBy(adminUserId);
+        event.setReason(reason);
+        
+        claimEventPublisher.publishClaimStatusChanged(event);
     }
 }
