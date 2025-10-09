@@ -312,7 +312,7 @@ public class ClaimServiceImpl implements ClaimService {
         event.setOldStatus(oldStatus);
         event.setNewStatus(newStatus);
         event.setUserId(claim.getKeycloakUserId());
-        event.setUserEmail(claim.getEmail());  // Assuming email field exists
+        event.setUserEmail(null);  // Email not stored in claim entity, can be fetched from Keycloak if needed
         event.setTimestamp(LocalDateTime.now());
         event.setChangedBy(adminUserId);
         event.setReason(reason);
