@@ -3,6 +3,7 @@ package com.example.notifications_service.kafka;
 import com.example.notifications_service.event.ClaimStatusChangedEvent;
 import com.example.notifications_service.model.Notification;
 import com.example.notifications_service.service.NotificationService;
+import com.example.notifications_service.service.WebSocketNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
 public class ClaimEventConsumer {
 
     private final NotificationService notificationService;
+    private final WebSocketNotificationService webSocketNotificationService;
 
     /**
      * Listen for claim status changed events from Kafka
@@ -35,8 +37,8 @@ public class ClaimEventConsumer {
             String message = buildNotificationMessage(event);
             Notification.NotificationType type = mapStatusToNotificationType(event.getNewStatus());
 
-            // Create and save notification
-            notificationService.createNotification(
+            // Create and save notification to database
+            Notification savedNotification = notificationService.createNotification(
                     event.getUserId(),
                     event.getClaimNumber(),
                     message,
@@ -44,6 +46,11 @@ public class ClaimEventConsumer {
             );
 
             log.info("Successfully created notification for claim: {}", event.getClaimNumber());
+            
+            // Send real-time notification via WebSocket
+            webSocketNotificationService.sendNotificationToUser(event.getUserId(), savedNotification);
+            log.info("Sent real-time WebSocket notification to user: {}", event.getUserId());
+
         } catch (Exception e) {
             log.error("Failed to process claim status change event for claim: {}",
                     event.getClaimNumber(), e);

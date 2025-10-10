@@ -48,6 +48,9 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers("/actuator/gateway/**", "/actuator/routes").permitAll()
                 
+                // WebSocket endpoints - require authentication
+                .requestMatchers("/ws/**", "/api/notifications/ws/**").authenticated()
+                
                 // Admin-only endpoints - enforce admin role at gateway level
                 .requestMatchers("/api/admin/**").hasRole("admin")
                 
@@ -55,6 +58,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/policies/**").authenticated()
                 .requestMatchers("/api/profiles/**").authenticated()
                 .requestMatchers("/api/claims/**").authenticated()
+                .requestMatchers("/api/notifications/**").authenticated()
                 
                 // All other requests require authentication
                 .anyRequest().authenticated()

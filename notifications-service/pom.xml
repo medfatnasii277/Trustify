@@ -71,7 +71,15 @@
 	<dependency>
 		<groupId>org.springframework.kafka</groupId>
 		<artifactId>spring-kafka</artifactId>
-	</dependency>		<!-- Lombok -->
+	</dependency>
+	
+	<!-- WebSocket -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-websocket</artifactId>
+	</dependency>
+		
+		<!-- Lombok -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
