@@ -97,6 +97,14 @@ public class GatewayFilterConfig {
             .and(route("claims-service-admin")
                 .route(path("/api/admin/claims/**"), http("http://localhost:8082"))
                 .before(this::addUserInfoHeaders)
+                .build())
+            .and(route("notification-service")
+                .route(path("/api/notifications/**"), http("http://localhost:8084"))
+                .before(this::addUserInfoHeaders)
+                .build())
+            .and(route("notification-service-ws")
+                .route(path("/ws/**"), http("http://localhost:8084"))
+                .before(this::addUserInfoHeaders)
                 .build());
     }
 }

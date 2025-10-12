@@ -1,13 +1,15 @@
 package com.example.notifications_service.kafka;
 
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
+
 import com.example.notifications_service.event.ClaimStatusChangedEvent;
 import com.example.notifications_service.model.Notification;
 import com.example.notifications_service.service.NotificationService;
 import com.example.notifications_service.service.WebSocketNotificationService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
 
 /**
  * Kafka consumer to listen for claim status change events

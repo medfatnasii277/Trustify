@@ -1,10 +1,12 @@
 package com.example.notifications_service.service;
 
-import com.example.notifications_service.model.Notification;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import com.example.notifications_service.model.Notification;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service for sending real-time notifications via WebSocket

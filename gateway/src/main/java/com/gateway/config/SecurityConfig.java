@@ -1,5 +1,11 @@
 package com.gateway.config;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -16,12 +22,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Security configuration for API Gateway
@@ -47,6 +47,9 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers("/actuator/gateway/**", "/actuator/routes").permitAll()
+                
+                // WebSocket SockJS info endpoint - must be public for SockJS handshake
+                .requestMatchers("/ws/info", "/ws/**info**").permitAll()
                 
                 // WebSocket endpoints - require authentication
                 .requestMatchers("/ws/**", "/api/notifications/ws/**").authenticated()
