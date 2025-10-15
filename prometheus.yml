@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'policy-service'
+    static_configs:
+      - targets: ['localhost:8081']
+    metrics_path: '/actuator/prometheus'
+
+  - job_name: 'claims-service'
+    static_configs:
+      - targets: ['localhost:8082']
+    metrics_path: '/actuator/prometheus'
+
+  - job_name: 'notification-service'
+    static_configs:
+      - targets: ['localhost:8084']
+    metrics_path: '/actuator/prometheus'
+
+  - job_name: 'api-gateway'
+    static_configs:
+      - targets: ['localhost:8083']
+    metrics_path: '/actuator/prometheus'
+
+  - job_name: 'discovery-server'
+    static_configs:
+      - targets: ['localhost:8761']
+    metrics_path: '/actuator/prometheus'
+
+  - job_name: 'config-server'
+    static_configs:
+      - targets: ['localhost:8888']
+    metrics_path: '/actuator/prometheus'
